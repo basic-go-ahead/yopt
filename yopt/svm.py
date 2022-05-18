@@ -54,8 +54,9 @@ class SVMBinaryClassifier:
 
         if self._weights is None or self.mode == 'offline':
             self._weights = np.zeros(X.shape[1], dtype=np.float64)
+            self._done_steps = 0
 
-        _sgd_fit(X, y, self.n_passes, self.reg_λ, self.start_ŋ, self._weights)
+        self._done_steps = _sgd_fit(X, y, self.n_passes, self.reg_λ, self.start_ŋ, self._weights, self._done_steps)
         return self
 
 

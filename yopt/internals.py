@@ -10,7 +10,8 @@ def _sgd_fit(
     n_passes: int,
     reg_λ: float,
     start_ŋ: float,
-    weights: ArrayLike
+    weights: ArrayLike,
+    done_steps: int
 ):
     n = X.shape[0]
     T = n * n_passes
@@ -21,7 +22,8 @@ def _sgd_fit(
     acc = np.zeros_like(weights)
 
     for t in range(T):
-        curr_ŋ = start_ŋ / (t + 1.)
+        done_steps += 1
+        curr_ŋ = start_ŋ / (done_steps + 1.)
         i = np.random.randint(n)
         features, target = X[i], y[i]
         d = np.dot(weights, features) * target
@@ -33,3 +35,4 @@ def _sgd_fit(
         acc += weights
 
     weights = acc / T
+    return done_steps
