@@ -2,17 +2,11 @@ import numpy as np
 
 from sklearn.multiclass import OneVsOneClassifier
 
-from typing import Any, Dict, Literal, Union
+from typing import Any, Dict, Union
 from numpy.typing import ArrayLike
 
 from .internals import _sgd_fit
 
-
-SGDMethod = Literal['sgd']
-
-MethodType = Union[SGDMethod, Literal['md']]
-
-MethodMode = Union[Literal['online'], Literal['offline']]
 
 
 class SVMBinaryClassifier:
@@ -21,8 +15,8 @@ class SVMBinaryClassifier:
     решения задачи бинарной классификации.
     """
     def __init__(self, reg_λ: float=1., start_ŋ: float=1e-1, n_passes: int=10,
-        method: MethodType=SGDMethod,
-        mode: MethodMode='offline'
+        method: str='sgd',
+        mode: str='offline'
     ):
         assert reg_λ > 0
         assert start_ŋ > 0
@@ -80,8 +74,8 @@ class SVMClassifier:
     решения задачи многоклассовой классификации.
     """
     def __init__(self, reg_λ: float=1., start_ŋ: float=1e-1, n_passes: int=10,
-        method: MethodType=SGDMethod,
-        mode: MethodMode='offline'
+        method: str='sgd',
+        mode: str='offline'
     ):
         self.svm = SVMBinaryClassifier(reg_λ, start_ŋ, n_passes, method, mode)
         self.inner_clf = OneVsOneClassifier(self.svm)
