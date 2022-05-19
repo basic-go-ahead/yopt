@@ -55,7 +55,8 @@ def _md_online_fit(
     y *= 2
 
     for k in range(n_passes):
-        for features, target in zip(X, y):
+        # for features, target in zip(X, y):
+        for i in range(X.shape[0]):
             done_steps += 1
 
             curr_ŋ = start_ŋ if md_strategy == 0 else start_ŋ / done_steps
@@ -64,7 +65,7 @@ def _md_online_fit(
             #     curr_ŋ = start_ŋ
             # else:
             #     curr_ŋ = start_ŋ / done_steps
-
+            features, target = X[i], y[i]
             d = np.dot(weights, features) * target
 
             if d <= 1.:
