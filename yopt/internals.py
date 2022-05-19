@@ -13,7 +13,8 @@ def _sgd_fit(
     weights: ArrayLike,
     done_steps: int
 ):
-    T = X.shape[0] * n_passes
+    n = X.shape[0]
+    T = n * n_passes
 
     y -= .5
     y *= 2
