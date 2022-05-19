@@ -45,7 +45,6 @@ def _md_online_fit(
     X: ArrayLike,
     y: ArrayLike,
     n_passes: int,
-    reg_λ: float,
     start_ŋ: float,
     weights: ArrayLike,
     done_steps: int,
@@ -59,10 +58,12 @@ def _md_online_fit(
         for features, target in zip(X, y):
             done_steps += 1
 
-            if md_strategy == 0:
-                curr_ŋ = start_ŋ
-            else:
-                curr_ŋ = start_ŋ / done_steps
+            curr_ŋ = start_ŋ if md_strategy == 0 else start_ŋ / done_steps
+
+            # if md_strategy == 0:
+            #     curr_ŋ = start_ŋ
+            # else:
+            #     curr_ŋ = start_ŋ / done_steps
 
             d = np.dot(weights, features) * target
 

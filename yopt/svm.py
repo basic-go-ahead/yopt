@@ -70,62 +70,14 @@ class SVMBinaryClassifier:
         if self.method == 'sgd':
             self._done_steps = _sgd_fit(X, y, self.n_passes, self.reg_λ, self.start_ŋ, self._weights, self._done_steps)
         elif self.method == 'md':
-            n = X.shape[0]
-
             self._done_steps = _md_online_fit(X, y,
                 self.n_passes,
-                self.reg_λ,
                 self.start_ŋ,
                 self._weights,
                 self._done_steps,
                 self.md_inv_matrix,
                 self.md_strategy
             )
-
-            # weights = self._weights
-
-            # y -= .5
-            # y *= 2
-
-            # acc = np.zeros_like(weights)
-
-            # done_steps = self._done_steps
-
-            # for k in range(self.n_passes):
-            #     for features, target in zip(X, y):
-            #         done_steps += 1
-            #         curr_ŋ = self.start_ŋ / (done_steps + 1.)
-            #         # curr_ŋ = self.start_ŋ
-            #         # features, target = X[i], y[i]
-            #         d = np.dot(weights, features) * target
-
-            #         if d <= 1.:
-            #             if self.md_inv_matrix is None:
-            #                 weights += target * self.start_ŋ * features
-            #             else:
-            #                 weights += self.md_inv_matrix @ (target * curr_ŋ * features)
-
-            #             norm = np.linalg.norm(weights)
-
-            #             if norm > 1.:
-            #                 weights /= norm
-
-                    # acc += weights
-
-            # for k in range(self.n_passes):
-            #     for features, target in zip(X, y):
-            #         done_steps += 1
-            #         # curr_ŋ = self.start_ŋ / (done_steps + 1.)
-            #         # features, target = X[i], y[i]
-            #         d = np.dot(weights, features) * target
-
-            #         if d <= 1.:
-            #             weights += self.md_inv_matrix * target * self.reg_λ * self.start_ŋ * features
-
-            #         # acc += weights
-
-            # # weights = acc / T
-            # self._done_steps = done_steps
 
         return self
 
