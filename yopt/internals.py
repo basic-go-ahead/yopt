@@ -1,6 +1,8 @@
 import numpy as np
-from numpy.typing import ArrayLike
+import math
 from numba import jit
+
+from numpy.typing import ArrayLike
 
 
 @jit(nopython=True)
@@ -39,7 +41,6 @@ def _sgd_fit(
     return done_steps
 
 
-
 @jit(nopython=True)
 def _md_online_fit(
     X: ArrayLike,
@@ -58,23 +59,18 @@ def _md_online_fit(
         # for features, target in zip(X, y):
         for i in range(X.shape[0]):
             done_steps += 1
-
             curr_ŋ = start_ŋ if md_strategy == 0 else start_ŋ / done_steps
-
-            # if md_strategy == 0:
-            #     curr_ŋ = start_ŋ
-            # else:
-            #     curr_ŋ = start_ŋ / done_steps
             features, target = X[i], y[i]
             d = np.dot(weights, features) * target
 
             if d <= 1.:
                 if inv_matrix is None:
                     weights += target * curr_ŋ * features
+                    norm = np.linalg.norm(weights)
                 else:
                     weights += inv_matrix @ (target * curr_ŋ * features)
+                    norm = math.sqrt(weights.T.dot(inv_matrix)*weights.T)
 
-                norm = np.linalg.norm(weights)
                 if norm > 1.:
                     weights /= norm
 

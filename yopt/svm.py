@@ -78,6 +78,8 @@ class SVMBinaryClassifier:
                 self.md_inv_matrix,
                 self.md_strategy
             )
+        else:
+            raise ValueError('Поддерживаются только sgd и md.')
 
         return self
 
