@@ -21,18 +21,19 @@ def _sgd_fit(
 
     acc = np.zeros_like(weights)
 
-    for t in range(T):
-        done_steps += 1
-        curr_ŋ = start_ŋ / (done_steps + 1.)
-        i = np.random.randint(n)
-        features, target = X[i], y[i]
-        d = np.dot(weights, features) * target
-        weights *= 1. - curr_ŋ
+    for k in range(n_passes):
+        indices = np.random.permutation(n)
+        for i in indices:
+            done_steps += 1
+            curr_ŋ = start_ŋ / (done_steps + 1.)
+            features, target = X[i], y[i]
+            d = np.dot(weights, features) * target
+            weights *= 1. - curr_ŋ
 
-        if d <= 1.:
-            weights += target * reg_λ * curr_ŋ * features
+            if d <= 1.:
+                weights += target * reg_λ * curr_ŋ * features
 
-        acc += weights
+            acc += weights
 
     weights = acc / T
     return done_steps
