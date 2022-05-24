@@ -69,10 +69,61 @@ def _md_online_fit(
                     norm = np.linalg.norm(weights)
                 else:
                     weights += inv_matrix @ (target * curr_ŋ * features)
-                    norm = math.sqrt(weights.T.dot(inv_matrix)*weights.T)
+                    norm = math.sqrt(np.dot(weights.dot(inv_matrix), weights))
 
                 if norm > 1.:
                     weights /= norm
+
+    return done_steps
+
+
+@jit(nopython=True)
+def _md_offline_fit(
+    X: ArrayLike,
+    y: ArrayLike,
+    n_passes: int,
+    start_ŋ: float,
+    weights: ArrayLike,
+    done_steps: int,
+    inv_matrix: ArrayLike,
+    md_strategy: int
+):
+    y -= .5
+    y *= 2
+
+    n = X.shape[0]
+
+    w = weights.copy()
+    g = np.zeros_like(weights)
+
+    for k in range(n_passes):
+        for i in range(n):
+            features, target = X[i], y[i]
+            d = np.dot(w, features) * target
+
+            if d <= 1.:
+                if inv_matrix is None:
+                    g += target * features
+                else:
+                    g += inv_matrix @ (target * features)
+
+        g /= n
+        done_steps += 1
+        curr_ŋ = start_ŋ / math.sqrt(done_steps)
+        w += curr_ŋ * g
+        g[:] = 0
+
+        if inv_matrix is None:
+            norm = np.linalg.norm(w)
+        else:
+            norm = math.sqrt(np.dot(w.dot(inv_matrix), w))
+
+        if norm > 1.:
+            w /= norm
+
+        weights += w
+
+    weights /= n_passes + 1
 
     return done_steps
 

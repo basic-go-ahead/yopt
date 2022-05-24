@@ -6,7 +6,7 @@ import enum
 from typing import Any, Dict, Union
 from numpy.typing import ArrayLike
 
-from .internals import _sgd_fit, _md_online_fit
+from .internals import _sgd_fit, _md_online_fit, _md_offline_fit
 
 
 class MirrorDescentStepStrategy(enum.IntEnum):
@@ -70,14 +70,24 @@ class SVMBinaryClassifier:
         if self.method == 'sgd':
             self._done_steps = _sgd_fit(X, y, self.n_passes, self.reg_λ, self.start_ŋ, self._weights, self._done_steps)
         elif self.method == 'md':
-            self._done_steps = _md_online_fit(X, y,
-                self.n_passes,
-                self.start_ŋ,
-                self._weights,
-                self._done_steps,
-                self.md_inv_matrix,
-                self.md_strategy
-            )
+            if self.mode == 'online':
+                self._done_steps = _md_online_fit(X, y,
+                    self.n_passes,
+                    self.start_ŋ,
+                    self._weights,
+                    self._done_steps,
+                    self.md_inv_matrix,
+                    self.md_strategy
+                )
+            else:
+                self._done_steps = _md_offline_fit(X, y,
+                    self.n_passes,
+                    self.start_ŋ,
+                    self._weights,
+                    self._done_steps,
+                    self.md_inv_matrix,
+                    self.md_strategy
+                )
         else:
             raise ValueError('Поддерживаются только sgd и md.')
 
