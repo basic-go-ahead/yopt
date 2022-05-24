@@ -84,14 +84,12 @@ def _md_offline_fit(
     n_passes: int,
     start_ŋ: float,
     weights: ArrayLike,
-    done_steps: int,
-    inv_matrix: ArrayLike,
-    md_strategy: int
+    inv_matrix: ArrayLike
 ):
     y -= .5
     y *= 2
 
-    n = X.shape[0]
+    n, done_steps = X.shape[0], 1
 
     w = weights.copy()
     g = np.zeros_like(weights)
@@ -108,10 +106,10 @@ def _md_offline_fit(
                     g += inv_matrix @ (target * features)
 
         g /= n
-        done_steps += 1
         curr_ŋ = start_ŋ / math.sqrt(done_steps)
         w += curr_ŋ * g
         g[:] = 0
+        done_steps += 1
 
         if inv_matrix is None:
             norm = np.linalg.norm(w)

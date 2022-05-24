@@ -9,11 +9,6 @@ from numpy.typing import ArrayLike
 from .internals import _sgd_fit, _md_online_fit, _md_offline_fit
 
 
-class MirrorDescentStepStrategy(enum.IntEnum):
-    CONST = 0
-    DECREASING = 1
-
-
 class SVMBinaryClassifier:
     """
     Представляет классификатор на основе метода опорных векторов для
@@ -22,8 +17,7 @@ class SVMBinaryClassifier:
     def __init__(self, reg_λ: float=1., start_ŋ: float=1e-1, n_passes: int=10,
         method: str='sgd',
         mode: str='offline',
-        md_inv_matrix: Union[ArrayLike, None]=None,
-        md_strategy: MirrorDescentStepStrategy=MirrorDescentStepStrategy.CONST
+        md_inv_matrix: Union[ArrayLike, None]=None
     ):
         assert reg_λ > 0
         assert start_ŋ > 0
@@ -36,7 +30,6 @@ class SVMBinaryClassifier:
         self.method = method
         self.mode = mode
         self.md_inv_matrix = md_inv_matrix
-        self.md_strategy = md_strategy
         
 
     def get_params(self, deep: bool=True) -> Dict[str, Any]:
@@ -46,8 +39,7 @@ class SVMBinaryClassifier:
             n_passes=self.n_passes,
             method=self.method,
             mode=self.mode,
-            md_inv_matrix=self.md_inv_matrix,
-            md_strategy=self.md_strategy
+            md_inv_matrix=self.md_inv_matrix
         )
 
 
@@ -76,17 +68,14 @@ class SVMBinaryClassifier:
                     self.start_ŋ,
                     self._weights,
                     self._done_steps,
-                    self.md_inv_matrix,
-                    self.md_strategy
+                    self.md_inv_matrix
                 )
             else:
                 self._done_steps = _md_offline_fit(X, y,
                     self.n_passes,
                     self.start_ŋ,
                     self._weights,
-                    self._done_steps,
-                    self.md_inv_matrix,
-                    self.md_strategy
+                    self.md_inv_matrix
                 )
         else:
             raise ValueError('Поддерживаются только sgd и md.')
@@ -102,7 +91,6 @@ class SVMBinaryClassifier:
         return np.inner(X, self._weights)
 
 
-
 class SVMClassifier:
     """
     Представляет классификатор на основе метода опорных векторов для
@@ -111,10 +99,9 @@ class SVMClassifier:
     def __init__(self, reg_λ: float=1., start_ŋ: float=1e-1, n_passes: int=10,
         method: str='sgd',
         mode: str='offline',
-        md_inv_matrix: Union[ArrayLike, None]=None,
-        md_strategy: MirrorDescentStepStrategy=MirrorDescentStepStrategy.CONST
+        md_inv_matrix: Union[ArrayLike, None]=None
     ):
-        self.svm = SVMBinaryClassifier(reg_λ, start_ŋ, n_passes, method, mode, md_inv_matrix, md_strategy)
+        self.svm = SVMBinaryClassifier(reg_λ, start_ŋ, n_passes, method, mode, md_inv_matrix)
         self.inner_clf = OneVsOneClassifier(self.svm)
 
 
