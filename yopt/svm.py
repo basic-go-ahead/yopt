@@ -55,7 +55,7 @@ class SVMBinaryClassifier:
         X = np.asarray(X, dtype=np.float64).copy()
         y = np.asarray(y, dtype=np.float64).copy()
 
-        if self._weights is None or self.mode == 'offline':
+        if self._weights is None or (self.mode == 'offline' and self.method != 'md'):
             self._weights = np.zeros(X.shape[1], dtype=np.float64, order='C')
             self._done_steps = 0
 
